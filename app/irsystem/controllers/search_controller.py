@@ -5,6 +5,7 @@ import json
 from nltk.tokenize import TreebankWordTokenizer
 from collections import Counter
 import numpy as np
+import os
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -24,7 +25,12 @@ def search():
 # query --> measure sim with "vehicle title + review" --> get the top five similar things 
 
 # TODO: fix this path issue so doesnt have to be local 
-with open('/Users/ikramonjur/Documents/cornell/sp2021/cs4300/midterm-project/cs4300sp2021-im324-fh244-yo82-dsh236-dam359/app/irsystem/controllers/reviews.json') as json_file:
+# 'cs4300sp2021-im324-fh244-yo82-dsh236-dam359/app/irsystem/controllers/reviews.json'
+absolute_path = os.path.dirname(os.path.abspath(__file__))
+print(absolute_path)
+# Or: file_path = os.path.join(absolute_path, 'folder', 'my_file.py')
+file_path = absolute_path + '/reviews.json'
+with open(file_path) as json_file:
     reviews_dict = json.load(json_file)
 
 treebank_tokenizer = TreebankWordTokenizer()

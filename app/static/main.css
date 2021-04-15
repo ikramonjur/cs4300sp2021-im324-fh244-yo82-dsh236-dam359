@@ -9,7 +9,7 @@ padding: 20px 0;
 text-align:center;
 }
 body {
-padding-top: 15%;
+padding-top: 0px;
 padding-bottom: 15px;
 }
 .global-search {
@@ -36,3 +36,18 @@ border: none
 .step-links a{
 color: #4285F4;
 }
+
+/* .result {
+background-color: lightskyblue;
+} */
+
+/* CSS FOR SLIDERS GUIDED BY  */
+.switch { 
+    position : relative ;
+    display : inline-block;
+    width : 40px;
+    height : 20px;
+    background-color: #eee;
+    border-radius: 20px;
+  }
+

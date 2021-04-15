@@ -11,30 +11,38 @@
         <p>Student Name: ({{ netid }})</p>
     </div>
     <form class="form-inline global-search">
-        <h1 style="font-size: 55px; font-family:Futura; color: #4285F4">
-            C
-            <span style="color: #EA4335; ">S</span>
-            <span style="color: #FBBC05; ">4</span>
-            3
-            <span style="color: #34A853; ">0</span>
-            <span style="color: #EA4335; ">0</span>
+        <h1 style="font-size: 55px; font-family:'Trebuchet MS', sans-serif; color: #4285F4">
+            Used Car Engine
         </h1>
-        <p>Just testing to make sure this shows up - Destiny</p>
         <br><br>
 
         <div class="form-group">
-            <input id="input" type="text" name="search" class="form-control" placeholder="Your Input">
+            <input id="input" type="text" name="search" class="form-control" placeholder="Make, Model, Luxury, Fast...">
         </div>
         <button type="submit" class="btn btn-info"> Go! </button>
+        <!-- <div style='display:block;'>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span>Test Toggle
+            </label>
+        </div> -->
     </form>
     <form class="form-inline global-search">
         {% if data %}
-        <h1>{{output_message}}</h1>
-        {% for d in data %}
-        <br>
-        <p>{{d}}</p>
-        {% endfor %}
+        <h1 style='margin-bottom:20px;'>{{output_message}}</h1>
+        <div class='all_results'
+            style='border: 1px solid lightgray;border-radius: 25px;width:80%;height:450px;margin-right:10%;margin-left:10%;overflow-y:auto;'>
+
+            {% for d in data %}
+
+            <div class='result'
+                style='background-color: lightskyblue;border-radius: 25px;display:flex;flex-direction: column;align-items:center;width:auto; height:150px;margin:10px;stroke-width:1px;stroke:blue;'>
+                <p style='font-size:20px;margin-top: 15px;align-self: center;'>{{d}}</p>
+            </div>
+            {% endfor %}
+        </div>
         {% endif %}
+
     </form>
 </body>
 
