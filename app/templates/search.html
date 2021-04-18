@@ -6,10 +6,7 @@
 </head>
 
 <body>
-    <div class="topcorner">
-        <p>Project Name: {{ name }}</p>
-        <p>Student Name: ({{ netid }})</p>
-    </div>
+
     <form class="form-inline global-search">
         <h1 style="font-size: 55px; font-family:'Trebuchet MS', sans-serif; color: #4285F4">
             Used Car Engine
@@ -31,7 +28,7 @@
         {% if data %}
         <h1 style='margin-bottom:20px;'>{{output_message}}</h1>
         <div class='all_results'
-            style='border: 1px solid lightgray;border-radius: 25px;width:80%;height:450px;margin-right:10%;margin-left:10%;overflow-y:auto;'>
+            style='border: 1px solid lightgray;border-radius: 25px;width:80%;height:650px;margin-right:10%;margin-left:10%;overflow-y:auto;'>
 
             {% for d in data %}
 
@@ -44,6 +41,10 @@
         {% endif %}
 
     </form>
+    <div class="bottomcorner">
+        <p>Project Name: {{ name }}</p>
+        <p>Student Name: ({{ netid }})</p>
+    </div>
 </body>
 
 </html>
