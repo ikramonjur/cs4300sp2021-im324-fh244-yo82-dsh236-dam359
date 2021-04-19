@@ -159,7 +159,7 @@ def calc_sc_inv_idx(query):
 	review_sc = index_search(query, review_inv_idx, review_idf, review_norms)
 
     # print("TITLE SCORE", title_sc)
-    sc_dict = {}
+	sc_dict = {}
     cars_with_sc = set(title_sc.keys()).union(set(review_sc.keys()))
     for carid in cars_with_sc:
         car = id_to_car[carid]
