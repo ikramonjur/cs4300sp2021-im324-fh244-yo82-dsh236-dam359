@@ -29,7 +29,7 @@ def search():
 treebank_tokenizer = TreebankWordTokenizer()
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
-file_path = absolute_path + '/reviews.json'
+file_path = absolute_path + '/smaller_reviews.json'
 
 with open(file_path) as json_file:
     reviews_dict = json.load(json_file)
@@ -113,18 +113,20 @@ def index_search(query, index, idf, doc_norms):
 tokens_dict = build_tokens_dict()
 title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
 
+title_idf = compute_idf(title_inv_idx, total_cars)
+title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
+
+review_idf = compute_idf(review_inv_idx, total_cars)
+review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
+
 def calc_sc_inv_idx(query):
 	#tokens_dict = build_tokens_dict()
 	#title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
 
 	#calculating title scores
-	title_idf = compute_idf(title_inv_idx, total_cars)
-	title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
 	title_sc = index_search(query, title_inv_idx, title_idf, title_norms)
 
 	#calculating review scores
-	review_idf = compute_idf(review_inv_idx, total_cars)
-	review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
 	review_sc = index_search(query, review_inv_idx, review_idf, review_norms)
 
 	# print("TITLE SCORE", title_sc)
