@@ -110,9 +110,12 @@ def index_search(query, index, idf, doc_norms):
 			cos_scores[i] = cos_sc
 	return cos_scores
 
+tokens_dict = build_tokens_dict()
+title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+
 def calc_sc_inv_idx(query):
-	tokens_dict = build_tokens_dict()
-	title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+	#tokens_dict = build_tokens_dict()
+	#title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
 
 	#calculating title scores
 	title_idf = compute_idf(title_inv_idx, total_cars)
