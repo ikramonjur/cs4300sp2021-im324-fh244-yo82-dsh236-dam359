@@ -7,6 +7,7 @@ from collections import Counter, defaultdict
 import numpy as np
 import os
 import math
+import pickle
 
 
 project_name = "Used Car Recommendations"
@@ -34,19 +35,19 @@ file_path = absolute_path + '/smaller_reviews.json'
 with open(file_path) as json_file:
     reviews_dict = json.load(json_file)
 
-# mapping of car to id
+# mapping of car to id - variables are reassigned before computation
 car_to_id = {}
 id_to_car = {}
 
 total_cars = len(reviews_dict.keys())
-    
+
 def build_tokens_dict():
 	review_tokens = {}
 	for i, car in enumerate(reviews_dict):
-		review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()), 
+		review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()),
 		"review_toks": treebank_tokenizer.tokenize(reviews_dict[car]["review"].lower().strip())}
 		car_to_id[car] = i
-		id_to_car[i] = car 
+		id_to_car[i] = car
 	return review_tokens
 
 def build_inverted_index(review_tokens):
@@ -102,7 +103,7 @@ def index_search(query, index, idf, doc_norms):
 				carid = tup[0]
 				doc_tf = tup[1]
 				cos_arr[carid] += q_tf[token] * idf[token] * idf[token] * doc_tf
-				
+
 	query_norm = math.sqrt(query_norm)
 	for i in range(doc_norms.shape[0]):
 		if cos_arr[i] != 0:
@@ -110,14 +111,38 @@ def index_search(query, index, idf, doc_norms):
 			cos_scores[i] = cos_sc
 	return cos_scores
 
-tokens_dict = build_tokens_dict()
-title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+# Setup computation for similarity score calculations
 
-title_idf = compute_idf(title_inv_idx, total_cars)
-title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
+# tokens_dict = build_tokens_dict()
+# title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+#
+# title_idf = compute_idf(title_inv_idx, total_cars)
+# title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
+#
+# review_idf = compute_idf(review_inv_idx, total_cars)
+# review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
 
-review_idf = compute_idf(review_inv_idx, total_cars)
-review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
+# Save all of them in pickle files
+
+# pickle.dump(title_inv_idx, open("title_inv_idx.pickle", "wb"))
+# pickle.dump(review_inv_idx, open("review_innv_idx.pickle", "wb"))
+# pickle.dump(title_idf, open("title_idf.pickle", "wb"))
+# pickle.dump(title_norms, open("title_norms.pickle", "wb"))
+# pickle.dump(review_idf, open("review_idf.pickle", "wb"))
+# pickle.dump(review_norms, open("review_norms.pickle", "wb"))
+# pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
+# pickle.dump(id_to_car, open("id_to_car.pickle", "wb"))
+
+# Load all the pickle files
+
+title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
+review_inv_idx = pickle.load(open("review_innv_idx.pickle", "rb"))
+title_idf = pickle.load(open("title_idf.pickle", "rb"))
+title_norms = pickle.load(open("title_norms.pickle", "rb"))
+review_idf = pickle.load(open("review_idf.pickle", "rb"))
+review_norms = pickle.load(open("review_norms.pickle", "rb"))
+car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
+id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
 
 def calc_sc_inv_idx(query):
 	#tokens_dict = build_tokens_dict()
