@@ -160,13 +160,11 @@ def calc_sc_inv_idx(query):
 
     # print("TITLE SCORE", title_sc)
 	sc_dict = {}
-    cars_with_sc = set(title_sc.keys()).union(set(review_sc.keys()))
-    for carid in cars_with_sc:
-        car = id_to_car[carid]
-        sc_dict[car] = (0.3 * review_sc[carid] + 0.7 *
-                        title_sc[carid], reviews_dict[car]["rating"])
-    return sc_dict
-
+	cars_with_sc = set(title_sc.keys()).union(set(review_sc.keys()))
+	for carid in cars_with_sc:
+		car = id_to_car[carid]
+		sc_dict[car] = (0.3 * review_sc[carid] + 0.7 * title_sc[carid], reviews_dict[car]["rating"])
+	return sc_dict
 
 # give more weight to the vehicle title if it is in query
 def calc_sim_sc(query):
