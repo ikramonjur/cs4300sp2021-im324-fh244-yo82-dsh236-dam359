@@ -42,14 +42,16 @@ id_to_car = {}
 
 total_cars = len(reviews_dict.keys())
 
+
 def build_tokens_dict():
-	review_tokens = {}
-	for i, car in enumerate(reviews_dict):
-		review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()),
-		"review_toks": treebank_tokenizer.tokenize(reviews_dict[car]["review"].lower().strip())}
-		car_to_id[car] = i
-		id_to_car[i] = car
-	return review_tokens
+    review_tokens = {}
+    for i, car in enumerate(reviews_dict):
+        review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()),
+                              "review_toks": treebank_tokenizer.tokenize(reviews_dict[car]["review"].lower().strip())}
+        car_to_id[car] = i
+        id_to_car[i] = car
+    return review_tokens
+
 
 def build_inverted_index(review_tokens):
     title_inverted_index = defaultdict(list)
@@ -92,28 +94,29 @@ def compute_norms(index, idf, n_docs):
 
 
 def index_search(query, index, idf, doc_norms):
-	cos_arr = np.zeros(doc_norms.shape[0])
-	cos_scores = Counter()
-	query_toks = treebank_tokenizer.tokenize(query.lower())
-	query_norm = 0
-	q_tf = Counter(query_toks)
+    cos_arr = np.zeros(doc_norms.shape[0])
+    cos_scores = Counter()
+    query_toks = treebank_tokenizer.tokenize(query.lower())
+    query_norm = 0
+    q_tf = Counter(query_toks)
 
-	# looping through each token in query
-	for token in q_tf.keys():
-		if token in idf.keys(): # make sure token appears in at least one doc
-			query_norm += (q_tf[token] * idf[token]) ** 2
-			postings = index[token]
-			for tup in postings:
-				carid = tup[0]
-				doc_tf = tup[1]
-				cos_arr[carid] += q_tf[token] * idf[token] * idf[token] * doc_tf
+    # looping through each token in query
+    for token in q_tf.keys():
+        if token in idf.keys():  # make sure token appears in at least one doc
+            query_norm += (q_tf[token] * idf[token]) ** 2
+            postings = index[token]
+            for tup in postings:
+                carid = tup[0]
+                doc_tf = tup[1]
+                cos_arr[carid] += q_tf[token] * \
+                    idf[token] * idf[token] * doc_tf
 
-	query_norm = math.sqrt(query_norm)
-	for i in range(doc_norms.shape[0]):
-		if cos_arr[i] != 0:
-			cos_sc = cos_arr[i] / (query_norm * doc_norms[i])
-			cos_scores[i] = cos_sc
-	return cos_scores
+    query_norm = math.sqrt(query_norm)
+    for i in range(doc_norms.shape[0]):
+        if cos_arr[i] != 0:
+            cos_sc = cos_arr[i] / (query_norm * doc_norms[i])
+            cos_scores[i] = cos_sc
+    return cos_scores
 
 # Setup computation for similarity score calculations
 
@@ -139,6 +142,7 @@ def index_search(query, index, idf, doc_norms):
 
 # Load all the pickle files
 
+
 title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
 review_inv_idx = pickle.load(open("review_innv_idx.pickle", "rb"))
 title_idf = pickle.load(open("title_idf.pickle", "rb"))
@@ -148,25 +152,29 @@ review_norms = pickle.load(open("review_norms.pickle", "rb"))
 car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
 id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
 
+
 def calc_sc_inv_idx(query):
-	#tokens_dict = build_tokens_dict()
-	#title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+    #tokens_dict = build_tokens_dict()
+    #title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
 
-	#calculating title scores
-	title_sc = index_search(query, title_inv_idx, title_idf, title_norms)
+    # calculating title scores
+    title_sc = index_search(query, title_inv_idx, title_idf, title_norms)
 
-	#calculating review scores
-	review_sc = index_search(query, review_inv_idx, review_idf, review_norms)
+    # calculating review scores
+    review_sc = index_search(query, review_inv_idx, review_idf, review_norms)
 
     # print("TITLE SCORE", title_sc)
-	sc_dict = {}
-	cars_with_sc = set(title_sc.keys()).union(set(review_sc.keys()))
-	for carid in cars_with_sc:
-		car = id_to_car[carid]
-		sc_dict[car] = (0.3 * review_sc[carid] + 0.7 * title_sc[carid], reviews_dict[car]["rating"])
-	return sc_dict
+    sc_dict = {}
+    cars_with_sc = set(title_sc.keys()).union(set(review_sc.keys()))
+    for carid in cars_with_sc:
+        car = id_to_car[carid]
+        sc_dict[car] = (0.3 * review_sc[carid] + 0.7 *
+                        title_sc[carid], reviews_dict[car]["rating"])
+    return sc_dict
 
 # give more weight to the vehicle title if it is in query
+
+
 def calc_sim_sc(query):
     query_toks = treebank_tokenizer.tokenize(query.lower())
     query_vec = np.array(list(Counter(query_toks).values()))
