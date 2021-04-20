@@ -31,7 +31,7 @@ def search():
 treebank_tokenizer = TreebankWordTokenizer()
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
-file_path = absolute_path + '/sample_reviews.json'
+file_path = absolute_path + '/reduced_reviews.json'
 
 with open(file_path) as json_file:
     reviews_dict = json.load(json_file)
@@ -120,36 +120,36 @@ def index_search(query, index, idf, doc_norms):
 
 # Setup computation for similarity score calculations
 
-# tokens_dict = build_tokens_dict()
-# title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
-#
-# title_idf = compute_idf(title_inv_idx, total_cars)
-# title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
-#
-# review_idf = compute_idf(review_inv_idx, total_cars)
-# review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
+tokens_dict = build_tokens_dict()
+title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+
+title_idf = compute_idf(title_inv_idx, total_cars)
+title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
+
+review_idf = compute_idf(review_inv_idx, total_cars)
+review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
 
 # Save all of them in pickle files
 
-# pickle.dump(title_inv_idx, open("title_inv_idx.pickle", "wb"))
-# pickle.dump(review_inv_idx, open("review_inv_idx.pickle", "wb"))
-# pickle.dump(title_idf, open("title_idf.pickle", "wb"))
-# pickle.dump(title_norms, open("title_norms.pickle", "wb"))
-# pickle.dump(review_idf, open("review_idf.pickle", "wb"))
-# pickle.dump(review_norms, open("review_norms.pickle", "wb"))
-# pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
-# pickle.dump(id_to_car, open("id_to_car.pickle", "wb"))
+pickle.dump(title_inv_idx, open("title_inv_idx.pickle", "wb"))
+pickle.dump(review_inv_idx, open("review_inv_idx.pickle", "wb"))
+pickle.dump(title_idf, open("title_idf.pickle", "wb"))
+pickle.dump(title_norms, open("title_norms.pickle", "wb"))
+pickle.dump(review_idf, open("review_idf.pickle", "wb"))
+pickle.dump(review_norms, open("review_norms.pickle", "wb"))
+pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
+pickle.dump(id_to_car, open("id_to_car.pickle", "wb"))
 
 # Load all the pickle files
 
-title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
-review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
-title_idf = pickle.load(open("title_idf.pickle", "rb"))
-title_norms = pickle.load(open("title_norms.pickle", "rb"))
-review_idf = pickle.load(open("review_idf.pickle", "rb"))
-review_norms = pickle.load(open("review_norms.pickle", "rb"))
-car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
-id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
+# title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
+# review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
+# title_idf = pickle.load(open("title_idf.pickle", "rb"))
+# title_norms = pickle.load(open("title_norms.pickle", "rb"))
+# review_idf = pickle.load(open("review_idf.pickle", "rb"))
+# review_norms = pickle.load(open("review_norms.pickle", "rb"))
+# car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
+# id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
 
 
 def calc_sc_inv_idx(query):
