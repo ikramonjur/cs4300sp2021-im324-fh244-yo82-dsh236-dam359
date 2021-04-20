@@ -31,7 +31,7 @@ def search():
 treebank_tokenizer = TreebankWordTokenizer()
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
-file_path = absolute_path + '/modified_reviews.json'
+file_path = absolute_path + '/sample_reviews.json'
 
 with open(file_path) as json_file:
     reviews_dict = json.load(json_file)
