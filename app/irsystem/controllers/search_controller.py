@@ -8,7 +8,7 @@ import numpy as np
 import os
 import math
 import pickle
-
+import resource
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -51,7 +51,6 @@ def build_tokens_dict():
         car_to_id[car] = i
         id_to_car[i] = car
     return review_tokens
-
 
 def build_inverted_index(review_tokens):
     title_inverted_index = defaultdict(list)
@@ -120,14 +119,14 @@ def index_search(query, index, idf, doc_norms):
 
 # Setup computation for similarity score calculations
 
-# tokens_dict = build_tokens_dict()
-# title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
-#
-# title_idf = compute_idf(title_inv_idx, total_cars)
-# title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
-#
-# review_idf = compute_idf(review_inv_idx, total_cars)
-# review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
+tokens_dict = build_tokens_dict()
+title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
+
+title_idf = compute_idf(title_inv_idx, total_cars)
+title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
+
+review_idf = compute_idf(review_inv_idx, total_cars)
+review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
 
 # Save all of them in pickle files
 
@@ -142,15 +141,14 @@ def index_search(query, index, idf, doc_norms):
 
 # Load all the pickle files
 
-title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
-review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
-title_idf = pickle.load(open("title_idf.pickle", "rb"))
-title_norms = pickle.load(open("title_norms.pickle", "rb"))
-review_idf = pickle.load(open("review_idf.pickle", "rb"))
-review_norms = pickle.load(open("review_norms.pickle", "rb"))
-car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
-id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
-
+# title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
+# review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
+# title_idf = pickle.load(open("title_idf.pickle", "rb"))
+# title_norms = pickle.load(open("title_norms.pickle", "rb"))
+# review_idf = pickle.load(open("review_idf.pickle", "rb"))
+# review_norms = pickle.load(open("review_norms.pickle", "rb"))
+# car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
+# id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
 
 def calc_sc_inv_idx(query):
     #tokens_dict = build_tokens_dict()
