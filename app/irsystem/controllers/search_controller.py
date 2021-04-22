@@ -3,6 +3,7 @@ from app.irsystem.models.helpers import *
 from app.irsystem.models.helpers import NumpyEncoder as NumpyEncoder
 import json
 from nltk.tokenize import TreebankWordTokenizer
+from nltk.stem import PorterStemmer, SnowballStemmer
 from collections import Counter, defaultdict
 import numpy as np
 import os
@@ -22,16 +23,21 @@ def search():
         output_message = ''
     else:
         output_message = "Your search: " + query
-        data = get_ranked(query)
+        try:
+            data = get_ranked(query)
+        except:
+            data = ["No results for current search | Try a new search"]
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
 # query --> measure sim with "vehicle title + review" --> get the top five similar things
 
 treebank_tokenizer = TreebankWordTokenizer()
+#stemmer = PorterStemmer()
+stemmer = SnowballStemmer("english")
 
 absolute_path = os.path.dirname(os.path.abspath(__file__))
-file_path = absolute_path + '/reduced_reviews.json'
+file_path = absolute_path + '/smaller_reviews.json'
 
 with open(file_path) as json_file:
     reviews_dict = json.load(json_file)
@@ -47,7 +53,7 @@ def build_tokens_dict():
     review_tokens = {}
     for i, car in enumerate(reviews_dict):
         review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()),
-                              "review_toks": treebank_tokenizer.tokenize(reviews_dict[car][3:].lower().strip())}
+                              "review_toks": treebank_tokenizer.tokenize(reviews_dict[car]["review"].lower().strip())}
         car_to_id[car] = i
         id_to_car[i] = car
     return review_tokens
@@ -57,7 +63,22 @@ def build_inverted_index(review_tokens):
     review_inverted_index = defaultdict(list)
     for car in review_tokens:
         carid = car_to_id[car]
-        title_toks = review_tokens[car]["title_toks"]
+        title_tokens = review_tokens[car]["title_toks"]
+        title_toks = []
+        for w in title_tokens:
+            #stem the title tokens
+            stemmed = stemmer.stem(w)
+            if w.isalnum():
+                if stemmed[-1] == "i":
+                    title_toks.append(stemmed[:len(stemmed)-1])
+                else:
+                    title_toks.append(stemmed)
+                #Map A-->automatic, M--> manual
+                if len(w) == 2 and w[0].isdigit() and w[1].isalpha():
+                    if w[1] == "a":
+                        title_toks.append(stemmer.stem("automatic"))
+                    elif w[1] == "m":
+                        title_toks.append(stemmer.stem("manual"))
         review_toks = review_tokens[car]["review_toks"]
         title_tf = Counter()
         review_tf = Counter()
@@ -95,7 +116,14 @@ def compute_norms(index, idf, n_docs):
 def index_search(query, index, idf, doc_norms):
     cos_arr = np.zeros(doc_norms.shape[0])
     cos_scores = Counter()
-    query_toks = treebank_tokenizer.tokenize(query.lower())
+    query_tokens = treebank_tokenizer.tokenize(query.lower())
+    query_toks = []
+    for w in query_tokens:
+        stemmed = stemmer.stem(w)
+        if stemmed[-1] == "i":
+            query_toks.append(stemmed[:len(stemmed)-1])
+        else:
+            query_toks.append(stemmed)
     query_norm = 0
     q_tf = Counter(query_toks)
 
@@ -128,27 +156,27 @@ title_norms = compute_norms(title_inv_idx, title_idf, total_cars)
 review_idf = compute_idf(review_inv_idx, total_cars)
 review_norms = compute_norms(review_inv_idx, review_idf, total_cars)
 
-# Save all of them in pickle files
+""" # Save all of them in pickle files
 
-# pickle.dump(title_inv_idx, open("title_inv_idx.pickle", "wb"))
-# pickle.dump(review_inv_idx, open("review_inv_idx.pickle", "wb"))
-# pickle.dump(title_idf, open("title_idf.pickle", "wb"))
-# pickle.dump(title_norms, open("title_norms.pickle", "wb"))
-# pickle.dump(review_idf, open("review_idf.pickle", "wb"))
-# pickle.dump(review_norms, open("review_norms.pickle", "wb"))
-# pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
-# pickle.dump(id_to_car, open("id_to_car.pickle", "wb"))
+pickle.dump(title_inv_idx, open("title_inv_idx.pickle", "wb"))
+pickle.dump(review_inv_idx, open("review_inv_idx.pickle", "wb"))
+pickle.dump(title_idf, open("title_idf.pickle", "wb"))
+pickle.dump(title_norms, open("title_norms.pickle", "wb"))
+pickle.dump(review_idf, open("review_idf.pickle", "wb"))
+pickle.dump(review_norms, open("review_norms.pickle", "wb"))
+pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
+pickle.dump(id_to_car, open("id_to_car.pickle", "wb")) """
 
 # Load all the pickle files
 
-# title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
-# review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
-# title_idf = pickle.load(open("title_idf.pickle", "rb"))
-# title_norms = pickle.load(open("title_norms.pickle", "rb"))
-# review_idf = pickle.load(open("review_idf.pickle", "rb"))
-# review_norms = pickle.load(open("review_norms.pickle", "rb"))
-# car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
-# id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
+title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
+review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
+title_idf = pickle.load(open("title_idf.pickle", "rb"))
+title_norms = pickle.load(open("title_norms.pickle", "rb"))
+review_idf = pickle.load(open("review_idf.pickle", "rb"))
+review_norms = pickle.load(open("review_norms.pickle", "rb"))
+car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
+id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
 
 def calc_sc_inv_idx(query):
     #tokens_dict = build_tokens_dict()
@@ -166,19 +194,29 @@ def calc_sc_inv_idx(query):
     for carid in cars_with_sc:
         car = id_to_car[carid]
         sc_dict[car] = (0.3 * review_sc[carid] + 0.7 *
-                        title_sc[carid], float(reviews_dict[car][:3]))
+                        title_sc[carid], float(reviews_dict[car]["rating"]))
     return sc_dict
 
 # give more weight to the vehicle title if it is in query
 
 
 def calc_sim_sc(query):
-    query_toks = treebank_tokenizer.tokenize(query.lower())
+    #tokenize the query
+    query_tokens = treebank_tokenizer.tokenize(query.lower())
+    
+    #stem the query
+    query_toks = []
+    for w in query_tokens:
+        query_toks.append(stemmer.stem(w))
+
     query_vec = np.array(list(Counter(query_toks).values()))
     sc_dict = {}
     for car in reviews_dict.keys():
-        review = reviews_dict[car][3:]
-        title_toks = treebank_tokenizer.tokenize(car.lower())
+        review = reviews_dict[car]["review"]
+        title_tokens = treebank_tokenizer.tokenize(car.lower())
+        title_toks = []
+        for w in title_tokens:
+            title_toks.append(stemmer.stem(w))
         title_qtf = Counter()
         review_toks = treebank_tokenizer.tokenize(review.lower())
         review_qtf = Counter()
@@ -196,7 +234,7 @@ def calc_sim_sc(query):
         title_sc = cosine_sim(query_vec, title_vec)
         review_sc = cosine_sim(query_vec, review_vec)
         sc_dict[car] = (0.3 * review_sc + 0.7 * title_sc,
-                        float(reviews_dict[car][:3]))
+                        float(reviews_dict[car]["rating"]))
     return sc_dict
 
 
