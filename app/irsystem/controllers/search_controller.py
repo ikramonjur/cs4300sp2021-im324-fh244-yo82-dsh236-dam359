@@ -52,11 +52,14 @@ total_cars = len(reviews_dict.keys())
 def build_tokens_dict():
     review_tokens = {}
     for i, car in enumerate(reviews_dict):
+        # review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()),
+        # "review_toks": treebank_tokenizer.tokenize(reviews_dict[car]["review"].lower().strip())}
         review_tokens[car] = {"title_toks": treebank_tokenizer.tokenize(car.lower().strip()),
-                              "review_toks": treebank_tokenizer.tokenize(reviews_dict[car]["review"].lower().strip())}
+                              "review_toks": treebank_tokenizer.tokenize(reviews_dict[car]['review'].lower().strip())}
         car_to_id[car] = i
         id_to_car[i] = car
     return review_tokens
+
 
 def build_inverted_index(review_tokens):
     title_inverted_index = defaultdict(list)
@@ -66,19 +69,21 @@ def build_inverted_index(review_tokens):
         title_tokens = review_tokens[car]["title_toks"]
         title_toks = []
         for w in title_tokens:
-            #stem the title tokens
+            # stem the title tokens
             stemmed = stemmer.stem(w)
             if w.isalnum():
                 if stemmed[-1] == "i":
                     title_toks.append(stemmed[:len(stemmed)-1])
                 else:
                     title_toks.append(stemmed)
-                #Map A-->automatic, M--> manual
+                # Map A-->automatic, M--> manual, Map AM -> automatic
                 if len(w) == 2 and w[0].isdigit() and w[1].isalpha():
                     if w[1] == "a":
                         title_toks.append(stemmer.stem("automatic"))
                     elif w[1] == "m":
                         title_toks.append(stemmer.stem("manual"))
+                elif w[0].isdigit() and w.endswith('am'):
+                    title_toks.append(stemmer.stem("automatic"))
         review_toks = review_tokens[car]["review_toks"]
         title_tf = Counter()
         review_tf = Counter()
@@ -147,6 +152,7 @@ def index_search(query, index, idf, doc_norms):
 
 # Setup computation for similarity score calculations
 
+
 tokens_dict = build_tokens_dict()
 title_inv_idx,  review_inv_idx = build_inverted_index(tokens_dict)
 
@@ -168,7 +174,7 @@ pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
 pickle.dump(id_to_car, open("id_to_car.pickle", "wb")) """
 
 # Load all the pickle files
-
+'''
 title_inv_idx = pickle.load(open("title_inv_idx.pickle", "rb"))
 review_inv_idx = pickle.load(open("review_inv_idx.pickle", "rb"))
 title_idf = pickle.load(open("title_idf.pickle", "rb"))
@@ -177,6 +183,8 @@ review_idf = pickle.load(open("review_idf.pickle", "rb"))
 review_norms = pickle.load(open("review_norms.pickle", "rb"))
 car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
 id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
+'''
+
 
 def calc_sc_inv_idx(query):
     #tokens_dict = build_tokens_dict()
@@ -201,10 +209,10 @@ def calc_sc_inv_idx(query):
 
 
 def calc_sim_sc(query):
-    #tokenize the query
+    # tokenize the query
     query_tokens = treebank_tokenizer.tokenize(query.lower())
-    
-    #stem the query
+
+    # stem the query
     query_toks = []
     for w in query_tokens:
         query_toks.append(stemmer.stem(w))
