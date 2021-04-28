@@ -3,51 +3,278 @@
 <head>
     <link rel="stylesheet" href="/static/bootstrap.min.css">
     <link rel="stylesheet" href="/static/main.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
 </head>
+<style>
+    body {
+        /* background: lavender; */
+        /* background-image: url("/static/road3.jpeg"); */
+        /* background-image: url("/static/car2.jpeg"); */
+
+        /* background-size: cover; */
+        background-color: white;
+        color: white;
+    }
+
+    #right {
+        background-color: #fff;
+    }
+
+    #left {
+        background-color: #4a6fa5;
+    }
+
+    .result {
+        background-color: #c0d6df;
+    }
+
+    .results-heading {
+        color: #4a6fa5;
+        margin-bottom: 20px;
+    }
+
+
+
+    /* CODE FOR SWITCHES FROM w3schools */
+    /* The switch - the box around the slider */
+    .switch {
+        position: relative;
+        display: inline-block;
+        /* width: 60px;
+        height: 34px; */
+        width: 60px;
+        height: 34px;
+    }
+
+    /* Hide default HTML checkbox */
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    /* The slider */
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #c0d6df;
+
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+    input:checked+.slider {
+        background-color: #2196F3;
+    }
+
+    input:focus+.slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked+.slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+    .slider.round:before {
+        border-radius: 50%;
+    }
+
+    .a-label {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin: 5px;
+
+    }
+
+    .toggle-label {
+        padding-top: 3px;
+        padding-left: 5px;
+        font-size: 20px;
+
+    }
+</style>
 
 <body>
+    <div id='wrapper' style='display: flex; flex-direction: row;height: 110%;'>
+        <section id='left' style='flex:2;'>
+            <form class="form-inline global-search">
+                <h1 style="font-size: 55px; font-family:'Trebuchet MS', sans-serif; color: #fff">
+                    Used Car Engine
+                </h1>
+                <br><br>
 
-    <form class="form-inline global-search">
-        <h1 style="font-size: 55px; font-family:'Trebuchet MS', sans-serif; color: #4285F4">
-            Used Car Engine
-        </h1>
-        <br><br>
+                <div class="form-group">
+                    <input id="input" type="text" name="search" class="form-control"
+                        placeholder="Make, Model, Luxury, Fast..." style='width:350px'>
 
-        <div class="form-group">
-            <input id="input" type="text" name="search" class="form-control" placeholder="Make, Model, Luxury, Fast...">
-        </div>
-        <button type="submit" class="btn btn-info"> Go! </button>
-        <!-- <div style='display:block;'>
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider round"></span>Test Toggle
-            </label>
-        </div> -->
-    </form>
+                </div>
+                <button type="submit" class="btn btn-info"> Search! </button>
+                <div id='filters' style='display:flex;flex-direction:column;margin-top:15px;'>
+                    <div class='a-label'>
+                        <label class='switch' for='manual-only'>
+                            <input type='checkbox' id='manual-only' />
+                            <span class='slider round'></span>
+                        </label>
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Manual Cars
+                            Only
+                        </p>
+                    </div>
+                    <div class='a-label'>
 
-    <div class="top">
+                        <label class='switch' for='auto-only'>
+                            <input type='checkbox' id='auto-only' />
+                            <span class='slider round'></span>
+                        </label>
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Automatic
+                            Cars
+                            Only
+                        </p>
+                    </div>
+                    <div class='a-label'>
 
-        <p>Project Name: {{ name }}</p>
-        <p>Student Name: ({{ netid }})</p>
-    </div>
+                        <label class='switch' for='2dr-only'>
+                            <input type='checkbox' id='2dr-only' />
+                            <span class='slider round'></span>
+                        </label>
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 2 door Cars
+                            Only
+                        </p>
+                    </div>
+                    <div class='a-label'>
 
-    <form class="form-inline global-search">
-        {% if data %}
-        <h1 style='margin-bottom:20px;'>{{output_message}}</h1>
-        <div class='all_results'
-            style='border: 1px solid lightgray;border-radius: 25px;width:80%;height:650px;margin-right:10%;margin-left:10%;overflow-y:auto;'>
+                        <label class='switch' for='4dr-only'>
+                            <input type='checkbox' id='4dr-only' />
+                            <span class='slider round'></span>
+                        </label>
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 4 door Cars
+                            Only
+                        </p>
 
-            {% for d in data %}
+                    </div>
+                    <div class='a-label'>
+                        <label class='switch' for='conv-only'>
+                            <input type='checkbox' id='conv-only' />
+                            <span class='slider round'></span>
+                        </label>
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Convertibles
+                            Only
+                        </p>
+                    </div>
+                    <div class='a-label'>
+                        <label class='switch' for='elec-only'>
+                            <input type='checkbox' id='elec-only' />
+                            <span class='slider round'></span>
+                        </label>
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Electric
+                            Only
+                        </p>
+                    </div>
+                    <div style='width:200px;margin:10px;'>
+                        <label for='min-year' id='min-year-label' style='display: inline;'>Min. Year</label>
+                        <input style='display: inline-block;width:100px;' id="min-year" type="text" name="min-year"
+                            placeholder="Min Year">
 
-            <div class='result'
-                style='background-color: lightskyblue;border-radius: 25px;display:flex;flex-direction: column;align-items:center;width:auto; height:150px;margin:10px;stroke-width:1px;stroke:blue;'>
-                <p style='font-size:20px;margin-top: 15px;align-self: center;'>{{d}}</p>
+                        <label for='max-year' id='max-year-label' style='display: inline;'>Max. Year</label>
+                        <input style='display: inline-block;width:100px;' id="max-year" type="text" name="max-year"
+                            placeholder="Max. Year">
+                    </div>
+                    <div style='width:200px;margin:10px;'>
+                        <label for='min-price' id='min-price-label' style='display: inline;'>Min. price</label>
+                        <input style='display: inline-block;width:100px;' id="min-price" type="text" name="min-price"
+                            placeholder="Min price">
+
+                        <label for='max-price' id='max-price-label' style='display: inline;'>Max. price</label>
+                        <input style='display: inline-block;width:100px;' id="max-price" type="text" name="max-price"
+                            placeholder="Max. price">
+                    </div>
+                    <!-- <div style='width:300px;margin:5px;'>
+                        <label style='display:block;' for='min-rating' id='min-rating-label'>Min. Rating</label>
+                        <p style='display: inline-block;'>0</p>
+                        <input style='width:200px;display:inline;margin:10px;' type='range' id='min-rating' min=0 max=5>
+                        <p style='display: inline-block;'>5</p>
+
+                    </div> -->
+                </div>
+
+            </form>
+            <!-- <script>
+                // define a lookup for what text should be displayed for each value in your range
+                var rangeValues =
+                {
+                    "1997": "You've selected option 1!",
+                    "2017": "...and a custom label 4!"
+                };
+
+
+                $(function () {
+
+                    // on page load, set the text of the label based the value of the range
+                    $('#min-year-label').text(rangeValues[$('#min-year').val()]);
+
+                    // setup an event handler to set the text when the range value is dragged (see event for input) or changed (see event for change)
+                    $('#min-year').on('input change', function () {
+                        $('#min-year-label').text(rangeValues[$(this).val()]);
+                    });
+
+                });
+            </script> -->
+
+            <div class="top">
+                <center>
+                    <p>Project Name: {{ name }}</p>
+                    <p>Student Name: ({{ netid }})</p>
+                </center>
             </div>
-            {% endfor %}
-        </div>
-        {% endif %}
+        </section>
+        <section id='right' style='flex:3;'>
+            <form class="form-inline global-search">
+                {% if data %}
+                <h1 class=results-heading>{{output_message}}</h1>
+                <div class='all_results'
+                    style='width:80%;height:560px;margin-right:10%;margin-left:10%;overflow-y:auto;'>
 
-    </form>
+                    {% for d in data %}
+
+                    <div class='result'
+                        style='border-radius: 25px;display:flex;flex-direction: column;align-items:center;width:auto; height:100px;margin:10px;stroke-width:1px;stroke:blue;'>
+                        <p style='font-size:20px;margin-top: 15px;align-self: center;'>{{d}}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <h1>{{output_message}}</h1>
+                {% endif %}
+
+
+            </form>
+        </section>
+    </div>
 </body>
 
 </html>
