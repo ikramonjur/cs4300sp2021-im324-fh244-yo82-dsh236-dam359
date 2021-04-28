@@ -19,6 +19,7 @@ net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny M
 mac_memory_in_MB = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (2**20)
 print("memory beg", mac_memory_in_MB)
 
+
 @irsystem.route('/', methods=['GET'])
 def search():
     query = request.args.get('search')
@@ -28,6 +29,8 @@ def search():
     else:
         output_message = "Your search: " + query
         data = get_ranked(query)
+        if len(data) == 0:
+            data = ["No results for current search | Try a new search"]
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
 
 
@@ -78,27 +81,38 @@ print("memory after load", mac_memory_in_MB)
 
 stemmer = SnowballStemmer("english")
 
+
 def get_ranked(query):
     sim_mat = cosine_sim(query)
-    ranked_lst = [(id_to_car[i], ratings[i]) for i in np.argsort(sim_mat)[::-1][:5]]
-    # for i in range(len(ranked_lst)):
-    #     print(ranked_lst[i])
-    return ranked_lst
+
+    if sim_mat[(np.argsort((sim_mat))[::-1][:5])[0]] == 0.0:
+        return []
+    else:
+        ranked_lst = [(id_to_car[i], ratings[i])
+                      for i in np.argsort(sim_mat)[::-1][:5]]
+        return ranked_lst
+    # printing out to see the cosine scores
+    # for i in np.argsort((sim_mat))[::-1][:5]:
+        # print(sim_mat[i])
 
 # data is the car name
+
+
 def cosine_sim(query):
     query_tokens = treebank_tokenizer.tokenize(query.lower())
     query_toks = []
     for w in query_tokens:
         stemmed = stemmer.stem(w)
         if stemmed[-1] == "i":
-            query_toks.append(stemmed[:len(stemmed)-1])
+            query_toks.append(stemmed[: len(stemmed)-1])
         else:
             query_toks.append(stemmed)
     stemmed_query = [" ".join(w for w in query_toks)]
     q_vec_reviews = tfidf_vec_reviews.transform(stemmed_query)
-    cos_sim_reviews = cosine_similarity(tfidf_mat_reviews,q_vec_reviews).flatten()
+    cos_sim_reviews = cosine_similarity(
+        tfidf_mat_reviews, q_vec_reviews).flatten()
     q_vec_titles = tfidf_vec_titles.transform(stemmed_query)
-    cos_sim_titles = cosine_similarity(tfidf_mat_titles,q_vec_titles).flatten()
+    cos_sim_titles = cosine_similarity(
+        tfidf_mat_titles, q_vec_titles).flatten()
     cos_sims = (0.3 * cos_sim_reviews) + (0.7 * cos_sim_titles)
     return cos_sims
