@@ -20,14 +20,41 @@
 
     #right {
         background-color: #fff;
+        flex: 3;
     }
 
     #left {
         background-color: #4a6fa5;
+        flex: 2;
+    }
+
+    .all_results {
+        width: 80%;
+        /* height: 560px; */
+        margin-right: 10%;
+        margin-left: 10%;
+        overflow-y: auto;
     }
 
     .result {
-        background-color: #c0d6df;
+        /* background-color: #c0d6df; */
+        background-color: #a3cfe0;
+
+        border-radius: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: auto;
+        /* height: 100px; */
+        margin: 10px;
+        padding: 15px;
+
+    }
+
+    .result p {
+        font-size: 20px;
+        /* margin-top: 15px; */
+        align-self: center;
     }
 
     .results-heading {
@@ -35,7 +62,17 @@
         margin-bottom: 20px;
     }
 
+    #condition {
+        width: 100px;
+    }
 
+    .bottom {
+        position: absolute;
+        bottom: 0;
+        width: 500px;
+
+
+    }
 
     /* CODE FOR SWITCHES FROM w3schools */
     /* The switch - the box around the slider */
@@ -122,7 +159,7 @@
 
 <body>
     <div id='wrapper' style='display: flex; flex-direction: row;height: 110%;'>
-        <section id='left' style='flex:2;'>
+        <section id='left'>
             <form class="form-inline global-search">
                 <h1 style="font-size: 55px; font-family:'Trebuchet MS', sans-serif; color: #fff">
                     Used Car Engine
@@ -136,7 +173,9 @@
                 </div>
                 <button type="submit" class="btn btn-info"> Search! </button>
                 <div id='filters' style='display:flex;flex-direction:column;margin-top:15px;'>
-                    <div class='a-label'>
+
+
+                    <!-- <div class='a-label'>
                         <label class='switch' for='manual-only'>
                             <input type='checkbox' id='manual-only' />
                             <span class='slider round'></span>
@@ -155,7 +194,8 @@
                             Cars
                             Only
                         </p>
-                    </div>
+                    </div> -->
+
                     <div class='a-label'>
 
                         <label class='switch' for='2dr-only'>
@@ -220,50 +260,82 @@
                         <p style='display: inline-block;'>5</p>
 
                     </div> -->
-                </div>
+                    <div>
+                        <label for='condition' id='condition-label'>Condition:</label>
+                        <select id='condition' name='condition'>
+                            <option value='na' selected>N/A</option>
+                            <option value="excellent"> Excellent </option>
+                            <option value="new"> New </option>
+                            <option value="like new"> Like new </option>
+                            <option value="good"> Good </option>
+                            <option value="fair"> Fair </option>
+                            <option value="salvage"> Salvage </option>
+                        </select>
+                        </label>
+                    </div>
+                    <div>
+                        <label for='transmission' id='transmission-label'>Transmission:</label>
+                        <select id='transmission' name='transmission'>
+                            <option value='both' selected>Automatic/Manual</option>
+                            <option value="automatic"> Automatic </option>
+                            <option value="manual"> Manual </option>
+                            <!-- <p>Transmission:</p>
+                        <label for='automatic' id='auto-label'> Automatic</label>
+                        <input type="radio" id='automatic' name='transmission' value='automatic'>
+                        <label for='manual' id='manual-label'> Manual</label>
+
+                        <input type="radio" id='manual' name='transmission' value='manual'>
+                        <label for='both' id='both-label'> Both</label>
+
+                        <input type="radio" id='both' name='transmission' value='both'> -->
+                        </select>
+                    </div>
 
             </form>
-            <!-- <script>
-                // define a lookup for what text should be displayed for each value in your range
-                var rangeValues =
-                {
-                    "1997": "You've selected option 1!",
-                    "2017": "...and a custom label 4!"
-                };
 
 
-                $(function () {
+            <div class="bottom">
+                <p>Project Name: {{ name }}</p>
+                <p>Student Name: ({{ netid }})</p>
 
-                    // on page load, set the text of the label based the value of the range
-                    $('#min-year-label').text(rangeValues[$('#min-year').val()]);
-
-                    // setup an event handler to set the text when the range value is dragged (see event for input) or changed (see event for change)
-                    $('#min-year').on('input change', function () {
-                        $('#min-year-label').text(rangeValues[$(this).val()]);
-                    });
-
-                });
-            </script> -->
-
-            <div class="top">
-                <center>
-                    <p>Project Name: {{ name }}</p>
-                    <p>Student Name: ({{ netid }})</p>
-                </center>
             </div>
         </section>
-        <section id='right' style='flex:3;'>
+        <section id='right'>
             <form class="form-inline global-search">
                 {% if data %}
                 <h1 class=results-heading>{{output_message}}</h1>
-                <div class='all_results'
-                    style='width:80%;height:560px;margin-right:10%;margin-left:10%;overflow-y:auto;'>
+                <div class='all_results'>
 
                     {% for d in data %}
 
-                    <div class='result'
-                        style='border-radius: 25px;display:flex;flex-direction: column;align-items:center;width:auto; height:100px;margin:10px;stroke-width:1px;stroke:blue;'>
-                        <p style='font-size:20px;margin-top: 15px;align-self: center;'>{{d}}</p>
+                    <div class='result'>
+                        {% if '4dr' in d[0] %}
+                        {% with x = d[0].index('4dr') %}
+                        <p class='result-title'>{{d[0][:x]}}</p>
+                        <!-- how to round rating!!! -->
+                        <p class='result-rating'>Average Rating: {{d[1]}}</p>
+                        {% if '(' in d[0] %}
+                        <p class='result-type'>4 door {{d[0][x+3:d[0].index('(')]}}</p>
+                        {% else %}
+                        <p class='result-type'>4 door {{d[0][x+3:]}}</p>
+                        {% endif %}
+
+                        {% endwith %}
+                        {% else %}
+                        <!-- 2 DOORS -->
+                        {% with x = d[0].index('2dr') %}
+                        <p class='result-title'>{{d[0][:x]}}</p>
+                        {% if '(' in d[0] %}
+                        <p class='result-type'>2 door {{d[0][x+3:d[0].index('(')]}}</p>
+                        {% else %}
+                        <p class='result-type'>2 door {{d[0][x+3:]}}</p>
+                        {% endif %}
+                        <p class='result-rating'>Average Rating: {{d[1]}}</p>
+
+
+                        {% endwith %}
+
+                        {% endif %}
                     </div>
                     {% endfor %}
                 </div>
