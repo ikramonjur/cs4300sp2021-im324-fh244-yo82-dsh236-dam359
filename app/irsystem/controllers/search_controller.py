@@ -12,6 +12,7 @@ import pickle
 import resource
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.sparse.linalg import svds, eigs
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -111,18 +112,19 @@ def cosine_sim(query):
             query_toks.append(stemmed)
     stemmed_query = [" ".join(w for w in query_toks)]
     print(tfidf_mat_reviews.T.shape)
-    U_tit, S_tit, V_T_tit = np.linalg.svd(tfidf_mat_titles.toarray().T) 
+    U_tit, S_tit, V_T_tit = svds(tfidf_mat_titles.T, k=10)  # TODO: change k to a bigger number - 10 is temp so faster to debug the rest of code
     print("after title svd")
-    U_rev, S_rev, V_T_rev = np.linalg.svd(tfidf_mat_reviews.toarray().T) 
+    U_rev, S_rev, V_T_rev = svds(tfidf_mat_reviews.T, k=10) 
     print("after review svd")
     k_tit = int(0.6 * V_T_tit.shape[0])
     k_rev = int(0.6 * V_T_rev.shape[0])
+    print("K", k_tit)
 
     q_vec_reviews = tfidf_vec_reviews.transform(stemmed_query)
     q_vec_titles = tfidf_vec_titles.transform(stemmed_query)
-    q_hat_rev = np.matmul(np.transpose(U_rev[:,:k]),q_vec_reviews)
-    q_hat_tit = np.matmul(np.transpose(U_tit[:,:k]),q_vec_titles)
-    print("after qhat")
+    q_hat_rev = np.matmul(np.transpose(U_rev[:,:k_rev]),q_vec_reviews)
+    q_hat_tit = np.matmul(np.transpose(U_tit[:,:k_tit]),q_vec_titles)
+    print("after q_hat")
 
     sim = []
     for i in range(total_cars):
