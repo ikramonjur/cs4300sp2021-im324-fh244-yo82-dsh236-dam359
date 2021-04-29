@@ -90,10 +90,12 @@ def get_ranked(query):
     else:
         ranked_lst = [(id_to_car[i], ratings[i])
                       for i in np.argsort(sim_mat)[::-1][:5]]
+        # print(ranked_lst)
+        for i in np.argsort((sim_mat))[::-1][:5]:
+            print(sim_mat[i])
         return ranked_lst
     # printing out to see the cosine scores
-    # for i in np.argsort((sim_mat))[::-1][:5]:
-        # print(sim_mat[i])
+    
 
 # data is the car name
 
@@ -108,11 +110,41 @@ def cosine_sim(query):
         else:
             query_toks.append(stemmed)
     stemmed_query = [" ".join(w for w in query_toks)]
+    print(tfidf_mat_reviews.T.shape)
+    U_tit, S_tit, V_T_tit = np.linalg.svd(tfidf_mat_titles.toarray().T) 
+    print("after title svd")
+    U_rev, S_rev, V_T_rev = np.linalg.svd(tfidf_mat_reviews.toarray().T) 
+    print("after review svd")
+    k_tit = int(0.6 * V_T_tit.shape[0])
+    k_rev = int(0.6 * V_T_rev.shape[0])
+
     q_vec_reviews = tfidf_vec_reviews.transform(stemmed_query)
-    cos_sim_reviews = cosine_similarity(
-        tfidf_mat_reviews, q_vec_reviews).flatten()
     q_vec_titles = tfidf_vec_titles.transform(stemmed_query)
-    cos_sim_titles = cosine_similarity(
-        tfidf_mat_titles, q_vec_titles).flatten()
-    cos_sims = (0.3 * cos_sim_reviews) + (0.7 * cos_sim_titles)
-    return cos_sims
+    q_hat_rev = np.matmul(np.transpose(U_rev[:,:k]),q_vec_reviews)
+    q_hat_tit = np.matmul(np.transpose(U_tit[:,:k]),q_vec_titles)
+    print("after qhat")
+
+    sim = []
+    for i in range(total_cars):
+        print(i)
+        num_rev = np.matmul(np.matmul(np.diag(S_rev[:k_rev]),V_T_rev[:k_rev,i]),np.transpose(q_hat_rev))
+        denom_rev = np.linalg.norm(np.matmul(np.diag(S_rev[:k_rev]),V_T_rev[:k_rev,i]))*np.linalg.norm(q_hat_rev)
+        rev_sc = num_rev / denom_rev
+
+        num_tit = np.matmul(np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit,i]),np.transpose(q_hat_tit))
+        denom_tit = np.linalg.norm(np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit,i]))*np.linalg.norm(q_hat_tit)
+        tit_sc = num_tit / denom_tit
+
+        sim.append((0.3 * rev_sc) + (0.7 * tit_sc))
+    
+
+    return np.array(sim)
+    
+
+    # cos_sim_reviews = cosine_similarity(
+    #     tfidf_mat_reviews, q_vec_reviews).flatten()
+    
+    # cos_sim_titles = cosine_similarity(
+    #     tfidf_mat_titles, q_vec_titles).flatten()
+    # cos_sims = (0.3 * cos_sim_reviews) + (0.7 * cos_sim_titles)
+    # return cos_sims
