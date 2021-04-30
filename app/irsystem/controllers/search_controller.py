@@ -13,7 +13,6 @@ import resource
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse.linalg import svds, eigs
-from sklearn.decomposition import TruncatedSVD
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -125,8 +124,6 @@ def cosine_sim(query):
     k_rev = 500
 
     q_vec_reviews = tfidf_vec_reviews.transform(stemmed_query)
-    cos_sim_reviews = cosine_similarity(
-        tfidf_mat_reviews, q_vec_reviews).flatten()
     q_vec_titles = tfidf_vec_titles.transform(stemmed_query)
     q_hat_rev = q_vec_reviews@U_rev[:,:k_rev]
     q_hat_tit = q_vec_titles@U_tit[:,:k_tit]
