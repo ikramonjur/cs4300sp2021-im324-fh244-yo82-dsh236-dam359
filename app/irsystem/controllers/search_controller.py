@@ -172,31 +172,37 @@ def cosine_sim(query):
     q_hat_rev = q_vec_reviews@U_rev[:,:k_rev]
     q_hat_tit = q_vec_titles@U_tit[:,:k_tit]
 
-    sim = []
+    first_mul = np.matmul(np.diag(S_rev[:k_rev]), V_T_rev[:k_rev]) # 100 by 15609
 
-    for i in range(total_cars):
-        num_rev = np.matmul(np.matmul(np.diag(S_rev[:k_rev]),V_T_rev[:k_rev,i]),np.transpose(q_hat_rev))
-        denom_rev = np.linalg.norm(np.matmul(np.diag(S_rev[:k_rev]),V_T_rev[:k_rev,i]))*np.linalg.norm(q_hat_rev)
-        if denom_rev == 0:
-            rev_sc = 0
-        else:
-            rev_sc = num_rev / denom_rev
+    num_rev = np.matmul(np.transpose(first_mul), np.transpose(q_hat_rev))
+    print("second_mul", num_rev.shape) # 15609 by 1
 
-        num_tit = np.matmul(np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit,i]),np.transpose(q_hat_tit))
-        denom_tit = np.linalg.norm(np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit,i]))*np.linalg.norm(q_hat_tit)
-        if denom_tit == 0:
-            tit_sc = 0
-        else:
-            tit_sc = num_tit / denom_tit
-        sim.append((0.3 * rev_sc) + (0.7 * tit_sc))
+    norms = np.apply_along_axis(np.linalg.norm, 0, first_mul)
+    print("norms", norms.shape)
 
-    return np.array(sim)
+    norm_q = np.linalg.norm(q_hat_rev) # this is a float
 
+    denom_rev = norm_q * norms # 15609
+    denom_rev = denom_rev.reshape((denom_rev.shape[0], 1))
+    print("denom rev", denom_rev.shape)
 
-    # cos_sim_reviews = cosine_similarity(
-    #     tfidf_mat_reviews, q_vec_reviews).flatten()
+    rev_sc = np.divide(num_rev, denom_rev, out=np.zeros_like(num_rev), where=denom_rev!=0)
+    print("rev sc", rev_sc.shape)
 
-    # cos_sim_titles = cosine_similarity(
-    #     tfidf_mat_titles, q_vec_titles).flatten()
-    # cos_sims = (0.3 * cos_sim_reviews) + (0.7 * cos_sim_titles)
-    # return cos_sims
+    first_num_tit = np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit]) # 325 by 15609
+
+    num_tit = np.matmul(np.transpose(first_num_tit), np.transpose(q_hat_tit)) # 15609 by 1
+
+    norms_tit = np.apply_along_axis(np.linalg.norm, 0, first_num_tit)
+
+    norm_q_tit = np.linalg.norm(q_hat_tit)
+
+    denom_tit = norm_q_tit * norms_tit
+    denom_tit = denom_tit.reshape((denom_tit.shape[0], 1))
+
+    tit_sc = np.divide(num_tit, denom_tit, out=np.zeros_like(num_tit), where=denom_tit!=0)
+
+    print("rev_sc", rev_sc[:5])
+    print("tit_sc", tit_sc[:5])
+    sim = (0.3 * rev_sc) + (0.7 * tit_sc)
+    return sim
