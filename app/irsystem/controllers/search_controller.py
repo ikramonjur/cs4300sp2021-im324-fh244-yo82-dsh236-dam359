@@ -133,7 +133,6 @@ stemmer = SnowballStemmer("english")
 
 def get_ranked(query):
     query = str(query)
-    # print("query is ", query)
     sim_mat = np.transpose(cosine_sim(query)).flatten()
 
     if sim_mat[(np.argsort((sim_mat))[::-1][:5])[0]] == 0.0:
