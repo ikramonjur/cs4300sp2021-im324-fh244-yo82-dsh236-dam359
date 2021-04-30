@@ -135,6 +135,7 @@ def get_ranked(query):
         # print("in else")
         ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2))
                       for i in np.argsort(sim_mat)[::-1][:5]]
+        ranked_lst = sorted(ranked_lst, key = lambda x: (x[2], x[1]), reverse=True)
         # print("list is ", ranked_lst)
 
         return ranked_lst
