@@ -46,7 +46,6 @@ treebank_tokenizer = TreebankWordTokenizer()
 
 # total_cars = len(reviews_dict.keys())
 
-# car_to_id = {car:id for id, car in enumerate(reviews_dict)}
 # id_to_car = {id:car for id, car in enumerate(reviews_dict)}
 
 # tfidf_vec_reviews = TfidfVectorizer()
@@ -62,28 +61,35 @@ treebank_tokenizer = TreebankWordTokenizer()
 # pickle.dump(tfidf_vec_titles, open("tfidf_vec_titles.pickle", "wb"))
 # pickle.dump(tfidf_mat_titles, open("tfidf_mat_titles.pickle", "wb"))
 # pickle.dump(ratings, open("ratings.pickle", "wb"))
-# pickle.dump(car_to_id, open("car_to_id.pickle", "wb"))
 # pickle.dump(id_to_car, open("id_to_car.pickle", "wb"))
 # pickle.dump(total_cars, open("total_cars.pickle", "wb"))
 
 # Load all the pickle files
 
-tfidf_mat_reviews = pickle.load(open("tfidf_mat_reviews.pickle", "rb"))
-tfidf_mat_titles = pickle.load(open("tfidf_mat_titles.pickle", "rb"))
+# tfidf_mat_reviews = pickle.load(open("tfidf_mat_reviews.pickle", "rb"))
+# tfidf_mat_titles = pickle.load(open("tfidf_mat_titles.pickle", "rb"))
 ratings = pickle.load(open("ratings.pickle", "rb"))
-car_to_id = pickle.load(open("car_to_id.pickle", "rb"))
 id_to_car = pickle.load(open("id_to_car.pickle", "rb"))
 total_cars = pickle.load(open("total_cars.pickle", "rb"))
 tfidf_vec_reviews = pickle.load(open("tfidf_vec_reviews.pickle", "rb"))
 tfidf_vec_titles = pickle.load(open("tfidf_vec_titles.pickle", "rb"))
 
-#tit_svd = svds(tfidf_mat_titles.T, k=500)
-#pickle.dump(tit_svd, open("tit_svd.pickle", "wb"))
-U_tit, S_tit, V_T_tit = pickle.load(open("tit_svd.pickle", "rb"))
-    
-#rev_svd = svds(tfidf_mat_reviews.T, k=500)
-#pickle.dump(rev_svd, open("rev_svd.pickle", "wb"))
-U_rev, S_rev, V_T_rev = pickle.load(open("rev_svd.pickle", "rb"))
+# U_tit, S_tit, V_T_tit = svds(tfidf_mat_titles.T, k=325)
+# pickle.dump(U_tit, open("u_tit_svd.pickle", "wb"))
+# pickle.dump(S_tit, open("s_tit_svd.pickle", "wb"))
+# pickle.dump(V_T_tit, open("v_t_svd.pickle", "wb"))
+#
+# U_rev, S_rev, V_T_rev = svds(tfidf_mat_reviews.T, k=100)
+# pickle.dump(U_rev, open("u_rev_svd.pickle", "wb"))
+# pickle.dump(S_rev, open("s_rev_svd.pickle", "wb"))
+# pickle.dump(V_T_rev, open("v_t_rev_svd.pickle", "wb"))
+
+U_tit = pickle.load(open("u_tit_svd.pickle", "rb"))
+S_tit = pickle.load(open("s_tit_svd.pickle", "rb"))
+V_T_tit = pickle.load(open("v_t_svd.pickle", "rb"))
+U_rev = pickle.load(open("u_rev_svd.pickle", "rb"))
+S_rev = pickle.load(open("s_rev_svd.pickle", "rb"))
+V_T_rev = pickle.load(open("v_t_rev_svd.pickle", "rb"))
 
 mac_memory_in_MB = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss / (2**20)
 print("memory after load", mac_memory_in_MB)
@@ -100,12 +106,12 @@ def get_ranked(query):
         ranked_lst = [(id_to_car[i], ratings[i])
                       for i in np.argsort(sim_mat)[::-1][:5]]
         # print(ranked_lst)
-        
+
         return ranked_lst
     # printing out to see the cosine scores
     #for i in np.argsort((sim_mat))[::-1][:5]:
         #print(sim_mat[i])
-    
+
 
 # data is the car name
 
@@ -120,8 +126,8 @@ def cosine_sim(query):
             query_toks.append(stemmed)
     stemmed_query = [" ".join(w for w in query_toks)]
 
-    k_tit = 500
-    k_rev = 500
+    k_tit = 325
+    k_rev = 100
 
     q_vec_reviews = tfidf_vec_reviews.transform(stemmed_query)
     q_vec_titles = tfidf_vec_titles.transform(stemmed_query)
@@ -129,23 +135,29 @@ def cosine_sim(query):
     q_hat_tit = q_vec_titles@U_tit[:,:k_tit]
 
     sim = []
+
     for i in range(total_cars):
         num_rev = np.matmul(np.matmul(np.diag(S_rev[:k_rev]),V_T_rev[:k_rev,i]),np.transpose(q_hat_rev))
         denom_rev = np.linalg.norm(np.matmul(np.diag(S_rev[:k_rev]),V_T_rev[:k_rev,i]))*np.linalg.norm(q_hat_rev)
-        rev_sc = num_rev / denom_rev
+        if denom_rev == 0:
+            rev_sc = 0
+        else:
+            rev_sc = num_rev / denom_rev
 
         num_tit = np.matmul(np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit,i]),np.transpose(q_hat_tit))
         denom_tit = np.linalg.norm(np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit,i]))*np.linalg.norm(q_hat_tit)
-        tit_sc = num_tit / denom_tit
-
+        if denom_tit == 0:
+            tit_sc = 0
+        else:
+            tit_sc = num_tit / denom_tit
         sim.append((0.3 * rev_sc) + (0.7 * tit_sc))
-        
+
     return np.array(sim)
-    
+
 
     # cos_sim_reviews = cosine_similarity(
     #     tfidf_mat_reviews, q_vec_reviews).flatten()
-    
+
     # cos_sim_titles = cosine_similarity(
     #     tfidf_mat_titles, q_vec_titles).flatten()
     # cos_sims = (0.3 * cos_sim_reviews) + (0.7 * cos_sim_titles)
