@@ -13,6 +13,7 @@ import resource
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse.linalg import svds
+import concurrent.futures
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -46,7 +47,7 @@ def search():
     if elec == "on":
         query += " electric hybrid"
 
-    print(query)
+
 
     if not query:
         data = []
@@ -54,9 +55,15 @@ def search():
     else:
         output_message = "Your search: " + search_bar
         try:
-            data = get_ranked(query)
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(get_ranked, query)
+                data = future.result()
         except:
             data = ["No results for current search | Try a new search"]
+        # ranking_thread = threading.Thread(target=get_ranked, name="Ranker", args=[query])
+        # ranking_thread.start()
+        # data = ranking_thread.join()
+
         if len(data) == 0:
             data = ["No results for current search | Try a new search"]
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
@@ -125,14 +132,18 @@ stemmer = SnowballStemmer("english")
 
 
 def get_ranked(query):
+    query = str(query)
+    # print("query is ", query)
     sim_mat = np.transpose(cosine_sim(query)).flatten()
 
     if sim_mat[(np.argsort((sim_mat))[::-1][:5])[0]] == 0.0:
+        # print("in if")
         return []
     else:
+        # print("in else")
         ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2))
                       for i in np.argsort(sim_mat)[::-1][:5]]
-        # print(ranked_lst)
+        # print("list is ", ranked_lst)
 
         return ranked_lst
     # printing out to see the cosine scores
