@@ -47,22 +47,15 @@ def search():
     if elec == "on":
         query += " electric hybrid"
 
-
-
     if not query:
         data = []
         output_message = ''
     else:
         output_message = "Your search: " + search_bar
         try:
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                future = executor.submit(get_ranked, query)
-                data = future.result()
+            data = get_ranked(query)
         except:
             data = ["No results for current search | Try a new search"]
-        # ranking_thread = threading.Thread(target=get_ranked, name="Ranker", args=[query])
-        # ranking_thread.start()
-        # data = ranking_thread.join()
 
         if len(data) == 0:
             data = ["No results for current search | Try a new search"]
