@@ -12,7 +12,7 @@ import pickle
 import resource
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from scipy.sparse.linalg import svds, eigs
+from scipy.sparse.linalg import svds
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -78,7 +78,7 @@ tfidf_vec_titles = pickle.load(open("tfidf_vec_titles.pickle", "rb"))
 # pickle.dump(U_tit, open("u_tit_svd.pickle", "wb"))
 # pickle.dump(S_tit, open("s_tit_svd.pickle", "wb"))
 # pickle.dump(V_T_tit, open("v_t_svd.pickle", "wb"))
-#
+
 # U_rev, S_rev, V_T_rev = svds(tfidf_mat_reviews.T, k=100)
 # pickle.dump(U_rev, open("u_rev_svd.pickle", "wb"))
 # pickle.dump(S_rev, open("s_rev_svd.pickle", "wb"))
