@@ -280,40 +280,44 @@
                 <h1 class=results-heading>{{output_message}}</h1>
                 <div class='all_results'>
 
-                    {% for d in data %}
+                    {%if data|length < 3%}
+                    <h1 class=results-heading>{{data[0]}}</h1>
+                    {% else %}
+                        {% for d in data %}
 
-                    <div class='result'>
-                        {% if '4dr' in d[0] %}
-                        {% with x = d[0].index('4dr') %}
-                        <p class='result-title'>{{d[0][:x]}}</p>
-                        {% if '(' in d[0] %}
-                        <p class='result-type'>4 Door {{d[0][x+3:d[0].index('(')]}}</p>
-                        {% else %}
-                        <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
-                        {% endif %}
-                        <p class='result-rating'>Average Rating: {{d[1]}}</p>
-                        <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
+                        <div class='result'>
+                            {% if '4dr' in d[0] %}
+                            {% with x = d[0].index('4dr') %}
+                            <p class='result-title'>{{d[0][:x]}}</p>
+                            {% if '(' in d[0] %}
+                            <p class='result-type'>4 Door {{d[0][x+3:d[0].index('(')]}}</p>
+                            {% else %}
+                            <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
+                            {% endif %}
+                            <p class='result-rating'>Average Rating: {{d[1]}}</p>
+                            <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
 
-                        {% endwith %}
-                        {% else %}
+                            {% endwith %}
+                            {% else %}
 
-                        <!-- 2 DOORS -->
-                        {% with x = d[0].index('2dr') %}
-                        <p class='result-title'>{{d[0][:x]}}</p>
-                        {% if '(' in d[0] %}
-                        <p class='result-type'>2 Door {{d[0][x+3:d[0].index('(')]}}</p>
-                        {% else %}
-                        <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
-                        {% endif %}
-                        <p class='result-rating'>Average Rating: {{d[1]}}</p>
-                        <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
+                            <!-- 2 DOORS -->
+                            {% with x = d[0].index('2dr') %}
+                            <p class='result-title'>{{d[0][:x]}}</p>
+                            {% if '(' in d[0] %}
+                            <p class='result-type'>2 Door {{d[0][x+3:d[0].index('(')]}}</p>
+                            {% else %}
+                            <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
+                            {% endif %}
+                            <p class='result-rating'>Average Rating: {{d[1]}}</p>
+                            <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
 
-                        {% endwith %}
+                            {% endwith %}
 
-                        {% endif %}
+                            {% endif %}
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                </div>
+                    {%endif%}
                 {% else %}
                 <h1>{{output_message}}</h1>
                 {% endif %}

@@ -53,7 +53,10 @@ def search():
         output_message = ''
     else:
         output_message = "Your search: " + search_bar
-        data = get_ranked(query)
+        try:
+            data = get_ranked(query)
+        except:
+            data = ["No results for current search | Try a new search"]
         if len(data) == 0:
             data = ["No results for current search | Try a new search"]
     return render_template('search.html', name=project_name, netid=net_id, output_message=output_message, data=data)
