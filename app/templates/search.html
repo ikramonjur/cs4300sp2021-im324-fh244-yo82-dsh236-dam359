@@ -38,7 +38,7 @@
 
     .result {
         /* background-color: #c0d6df; */
-        background-color: #a3cfe0;
+        background-color: #4a6fa5;
 
         border-radius: 25px;
         display: flex;
@@ -62,10 +62,6 @@
         margin-bottom: 20px;
     }
 
-    #condition {
-        width: 100px;
-    }
-
     .bottom {
         position: absolute;
         bottom: 0;
@@ -83,6 +79,7 @@
         height: 34px; */
         width: 60px;
         height: 34px;
+        margin-left: 150px;
     }
 
     /* Hide default HTML checkbox */
@@ -199,43 +196,40 @@
                     <div class='a-label'>
 
                         <label class='switch' for='2dr-only'>
-                            <input type='checkbox' id='2dr-only' />
+
+                            <input type='checkbox' id='2dr-only' name="2dr" />
                             <span class='slider round'></span>
                         </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 2 door Cars
-                            Only
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 2 Door Cars
                         </p>
                     </div>
                     <div class='a-label'>
 
                         <label class='switch' for='4dr-only'>
-                            <input type='checkbox' id='4dr-only' />
+                            <input type='checkbox' id='4dr-only' name="4dr" />
                             <span class='slider round'></span>
                         </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 4 door Cars
-                            Only
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 4 Door Cars
                         </p>
 
                     </div>
                     <div class='a-label'>
                         <label class='switch' for='conv-only'>
-                            <input type='checkbox' id='conv-only' />
+                            <input type='checkbox' id='conv-only' name="conv"/>
                             <span class='slider round'></span>
                         </label>
                         <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Convertibles
-                            Only
                         </p>
                     </div>
                     <div class='a-label'>
                         <label class='switch' for='elec-only'>
-                            <input type='checkbox' id='elec-only' />
+                            <input type='checkbox' id='elec-only' name="elec" />
                             <span class='slider round'></span>
                         </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Electric
-                            Only
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Electric/Hybrid
                         </p>
                     </div>
-                    <div style='width:200px;margin:10px;'>
+                    <!-- <div style='width:200px;margin:10px;'>
                         <label for='min-year' id='min-year-label' style='display: inline;'>Min. Year</label>
                         <input style='display: inline-block;width:100px;' id="min-year" type="text" name="min-year"
                             placeholder="Min Year">
@@ -243,16 +237,8 @@
                         <label for='max-year' id='max-year-label' style='display: inline;'>Max. Year</label>
                         <input style='display: inline-block;width:100px;' id="max-year" type="text" name="max-year"
                             placeholder="Max. Year">
-                    </div>
-                    <div style='width:200px;margin:10px;'>
-                        <label for='min-price' id='min-price-label' style='display: inline;'>Min. price</label>
-                        <input style='display: inline-block;width:100px;' id="min-price" type="text" name="min-price"
-                            placeholder="Min price">
+                    </div> -->
 
-                        <label for='max-price' id='max-price-label' style='display: inline;'>Max. price</label>
-                        <input style='display: inline-block;width:100px;' id="max-price" type="text" name="max-price"
-                            placeholder="Max. price">
-                    </div>
                     <!-- <div style='width:300px;margin:5px;'>
                         <label style='display:block;' for='min-rating' id='min-rating-label'>Min. Rating</label>
                         <p style='display: inline-block;'>0</p>
@@ -260,19 +246,7 @@
                         <p style='display: inline-block;'>5</p>
 
                     </div> -->
-                    <div>
-                        <label for='condition' id='condition-label'>Condition:</label>
-                        <select id='condition' name='condition'>
-                            <option value='na' selected>N/A</option>
-                            <option value="excellent"> Excellent </option>
-                            <option value="new"> New </option>
-                            <option value="like new"> Like new </option>
-                            <option value="good"> Good </option>
-                            <option value="fair"> Fair </option>
-                            <option value="salvage"> Salvage </option>
-                        </select>
-                        </label>
-                    </div>
+
                     <div>
                         <label for='transmission' id='transmission-label'>Transmission:</label>
                         <select id='transmission' name='transmission'>
@@ -312,26 +286,27 @@
                         {% if '4dr' in d[0] %}
                         {% with x = d[0].index('4dr') %}
                         <p class='result-title'>{{d[0][:x]}}</p>
-                        <!-- how to round rating!!! -->
-                        <p class='result-rating'>Average Rating: {{d[1]}}</p>
                         {% if '(' in d[0] %}
-                        <p class='result-type'>4 door {{d[0][x+3:d[0].index('(')]}}</p>
+                        <p class='result-type'>4 Door {{d[0][x+3:d[0].index('(')]}}</p>
                         {% else %}
-                        <p class='result-type'>4 door {{d[0][x+3:]}}</p>
+                        <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
                         {% endif %}
+                        <p class='result-rating'>Average Rating: {{d[1]}}</p>
+                        <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
 
                         {% endwith %}
                         {% else %}
+
                         <!-- 2 DOORS -->
                         {% with x = d[0].index('2dr') %}
                         <p class='result-title'>{{d[0][:x]}}</p>
                         {% if '(' in d[0] %}
-                        <p class='result-type'>2 door {{d[0][x+3:d[0].index('(')]}}</p>
+                        <p class='result-type'>2 Door {{d[0][x+3:d[0].index('(')]}}</p>
                         {% else %}
-                        <p class='result-type'>2 door {{d[0][x+3:]}}</p>
+                        <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
                         {% endif %}
                         <p class='result-rating'>Average Rating: {{d[1]}}</p>
-
+                        <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
 
                         {% endwith %}
 

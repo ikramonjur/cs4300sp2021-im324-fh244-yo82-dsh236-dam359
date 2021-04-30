@@ -23,12 +23,36 @@ print("memory beg", mac_memory_in_MB)
 
 @irsystem.route('/', methods=['GET'])
 def search():
-    query = request.args.get('search')
+    search_bar = request.args.get('search')
+    query = search_bar
+    transmission = request.args.get('transmission') # if manual or automatic add it to query
+    two_doors = request.args.get("2dr")
+    four_doors = request.args.get("4dr")
+    conv = request.args.get("conv")
+    elec = request.args.get("elec")
+
+    if transmission == "automatic" or transmission == "manual":
+        query += " " + transmission
+
+    if two_doors == "on":
+        query += " 2dr"
+
+    if four_doors == "on":
+        query += " 4dr"
+
+    if conv == "on":
+        query += " convertible"
+
+    if elec == "on":
+        query += " electric hybrid"
+
+    print(query)
+
     if not query:
         data = []
         output_message = ''
     else:
-        output_message = "Your search: " + query
+        output_message = "Your search: " + search_bar
         data = get_ranked(query)
         if len(data) == 0:
             data = ["No results for current search | Try a new search"]
@@ -103,7 +127,7 @@ def get_ranked(query):
     if sim_mat[(np.argsort((sim_mat))[::-1][:5])[0]] == 0.0:
         return []
     else:
-        ranked_lst = [(id_to_car[i], ratings[i])
+        ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2))
                       for i in np.argsort(sim_mat)[::-1][:5]]
         # print(ranked_lst)
 
