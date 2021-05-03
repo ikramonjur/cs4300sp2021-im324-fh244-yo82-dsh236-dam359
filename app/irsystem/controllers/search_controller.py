@@ -16,6 +16,7 @@ from scipy.sparse.linalg import svds
 import concurrent.futures
 from bs4 import BeautifulSoup
 import requests
+import re
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -141,6 +142,28 @@ def get_image(car_name):
 
     return car_image
 
+def get_link(car_name):
+    car_toks = car_name.split(" ")
+    url = 'https://www.google.com/search?q='
+    for i, tok in enumerate(car_toks):
+        if (i == len(car_toks)-1):
+            url+=tok
+        else:
+            url+=tok+'+'
+    url += "&num=" + str(5)
+    html_text = requests.get(url).text
+    soup = BeautifulSoup(html_text, 'html.parser')
+    
+    #Below code snippet from: https://predictivehacks.com/how-to-scrape-google-results-for-free-using-python/
+    result = soup.find_all('div', attrs = {'class': 'ZINbbc'})
+    results = [re.search(r'\/url\?q\=(.*)\&sa',str(i.find('a', href = True)['href'])) for i in result if "url" in str(i)]
+    links=[i.group(1) for i in results if i != None]
+    #end of code snippet
+    
+    link = links[0]
+    return link
+
+
 def get_ranked(query):
     query = str(query)
     sim_mat = np.transpose(cosine_sim(query)).flatten()
@@ -150,7 +173,7 @@ def get_ranked(query):
         return []
     else:
         # print("in else")
-        ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2), get_image(id_to_car[i]))
+        ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2), get_image(id_to_car[i]), get_link(id_to_car[i]))
                       for i in np.argsort(sim_mat)[::-1][:5]]
         ranked_lst = sorted(ranked_lst, key = lambda x: (x[2], x[1]), reverse=True)
 
@@ -186,19 +209,19 @@ def cosine_sim(query):
     first_mul = np.matmul(np.diag(S_rev[:k_rev]), V_T_rev[:k_rev]) # 100 by 15609
 
     num_rev = np.matmul(np.transpose(first_mul), np.transpose(q_hat_rev))
-    print("second_mul", num_rev.shape) # 15609 by 1
+    #print("second_mul", num_rev.shape) # 15609 by 1
 
     norms = np.apply_along_axis(np.linalg.norm, 0, first_mul)
-    print("norms", norms.shape)
+    #print("norms", norms.shape)
 
     norm_q = np.linalg.norm(q_hat_rev) # this is a float
 
     denom_rev = norm_q * norms # 15609
     denom_rev = denom_rev.reshape((denom_rev.shape[0], 1))
-    print("denom rev", denom_rev.shape)
+    #print("denom rev", denom_rev.shape)
 
     rev_sc = np.divide(num_rev, denom_rev, out=np.zeros_like(num_rev), where=denom_rev!=0)
-    print("rev sc", rev_sc.shape)
+    #print("rev sc", rev_sc.shape)
 
     first_num_tit = np.matmul(np.diag(S_tit[:k_tit]),V_T_tit[:k_tit]) # 325 by 15609
 
@@ -213,7 +236,7 @@ def cosine_sim(query):
 
     tit_sc = np.divide(num_tit, denom_tit, out=np.zeros_like(num_tit), where=denom_tit!=0)
 
-    print("rev_sc", rev_sc[:5])
-    print("tit_sc", tit_sc[:5])
+    #print("rev_sc", rev_sc[:5])
+    #print("tit_sc", tit_sc[:5])
     sim = (0.3 * rev_sc) + (0.7 * tit_sc)
     return sim

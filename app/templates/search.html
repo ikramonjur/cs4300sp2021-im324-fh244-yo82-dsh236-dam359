@@ -288,7 +288,7 @@
                         <div class='result'>
                             {% if '4dr' in d[0] %}
                             {% with x = d[0].index('4dr') %}
-                            <p class='result-title'>{{d[0][:x]}}</p>
+                            <p><a href='{{d[4]}}' style='color:#FFFFFF'>{{d[0][:x]}}</a></p>
                             {% if '(' in d[0] %}
                             <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
                             {% else %}
@@ -304,7 +304,7 @@
 
                             <!-- 2 DOORS -->
                             {% with x = d[0].index('2dr') %}
-                            <p class='result-title'>{{d[0][:x]}}</p>
+                            <p><a href='http://www.google.com/search?q={{d[0][:x]}}' style='color:#FFFFFF'>{{d[0][:x]}}</a></p>
                             {% if '(' in d[0] %}
                             <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
                             {% else %}
