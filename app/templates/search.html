@@ -304,7 +304,7 @@
 
                             <!-- 2 DOORS -->
                             {% with x = d[0].index('2dr') %}
-                            <p><a href='http://www.google.com/search?q={{d[0][:x]}}' style='color:#FFFFFF'>{{d[0][:x]}}</a></p>
+                            <p><a href='{{d[4]}}' style='color:#FFFFFF'>{{d[0][:x]}}</a></p>
                             {% if '(' in d[0] %}
                             <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
                             {% else %}
