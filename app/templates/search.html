@@ -296,6 +296,8 @@
                             {% endif %}
                             <p class='result-rating'>Average Rating: {{d[1]}}</p>
                             <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
+                            <img src='{{d[3]}}'>
+
 
                             {% endwith %}
                             {% else %}
@@ -310,6 +312,7 @@
                             {% endif %}
                             <p class='result-rating'>Average Rating: {{d[1]}}</p>
                             <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
+                            <img src={{d[3]}}>
 
                             {% endwith %}
 

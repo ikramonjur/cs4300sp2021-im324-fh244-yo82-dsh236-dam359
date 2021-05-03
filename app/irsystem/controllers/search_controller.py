@@ -14,6 +14,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from scipy.sparse.linalg import svds
 import concurrent.futures
+from bs4 import BeautifulSoup
+import requests
 
 project_name = "Used Car Recommendations"
 net_id = "Ikra Monjur: im324, Yoon Jae Oh: yo82, Fareeza Hasan: fh244, Destiny Malloy: dam359, David Hu: dsh236"
@@ -54,6 +56,7 @@ def search():
         output_message = "Your search: " + search_bar
         try:
             data = get_ranked(query)
+            # print(data)
         except:
             data = ["No results for current search | Try a new search"]
 
@@ -123,6 +126,20 @@ print("memory after load", mac_memory_in_MB)
 
 stemmer = SnowballStemmer("english")
 
+def get_image(car_name):
+    car_toks = car_name.split(" ")
+    url = 'https://www.google.com/search?q='
+    for i, tok in enumerate(car_toks):
+        if (i == len(car_toks)-1):
+            url+=tok+"&tbm=isch"
+        else:
+            url+=tok+'+'
+    html_text = requests.get(url).text
+    soup = BeautifulSoup(html_text, 'html.parser')
+
+    car_image = soup.find('img', attrs={'class' : 't0fcAb'}).get('src')
+
+    return car_image
 
 def get_ranked(query):
     query = str(query)
@@ -133,9 +150,10 @@ def get_ranked(query):
         return []
     else:
         # print("in else")
-        ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2))
+        ranked_lst = [(id_to_car[i], round(ratings[i], 2), round(sim_mat[i], 2), get_image(id_to_car[i]))
                       for i in np.argsort(sim_mat)[::-1][:5]]
         ranked_lst = sorted(ranked_lst, key = lambda x: (x[2], x[1]), reverse=True)
+
         # print("list is ", ranked_lst)
 
         return ranked_lst
