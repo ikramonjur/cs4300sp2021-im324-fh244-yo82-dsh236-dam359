@@ -70,6 +70,10 @@
 
     }
 
+    #transmission {
+        color: black;
+    }
+
     /* CODE FOR SWITCHES FROM w3schools */
     /* The switch - the box around the slider */
     .switch {
@@ -215,7 +219,7 @@
                     </div>
                     <div class='a-label'>
                         <label class='switch' for='conv-only'>
-                            <input type='checkbox' id='conv-only' name="conv"/>
+                            <input type='checkbox' id='conv-only' name="conv" />
                             <span class='slider round'></span>
                         </label>
                         <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Convertibles
@@ -226,7 +230,8 @@
                             <input type='checkbox' id='elec-only' name="elec" />
                             <span class='slider round'></span>
                         </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Electric/Hybrid
+                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'>
+                            Electric/Hybrid
                         </p>
                     </div>
                     <!-- <div style='width:200px;margin:10px;'>
@@ -250,7 +255,7 @@
                     <div>
                         <label for='transmission' id='transmission-label'>Transmission:</label>
                         <select id='transmission' name='transmission'>
-                            <option value='both' selected>Automatic/Manual</option>
+                            <option value='both' selected>Any</option>
                             <option value="automatic"> Automatic </option>
                             <option value="manual"> Manual </option>
                             <!-- <p>Transmission:</p>
@@ -280,9 +285,8 @@
                 <h1 class=results-heading>{{output_message}}</h1>
                 <div class='all_results'>
 
-                    {%if data|length < 3%}
-                    <h1 class=results-heading>{{data[0]}}</h1>
-                    {% else %}
+                    {%if data|length < 3%} <h1 class=results-heading>{{data[0]}}</h1>
+                        {% else %}
                         {% for d in data %}
 
                         <div class='result'>
@@ -316,8 +320,8 @@
                             {% endif %}
                         </div>
                         {% endfor %}
-                    </div>
-                    {%endif%}
+                </div>
+                {%endif%}
                 {% else %}
                 <h1>{{output_message}}</h1>
                 {% endif %}
