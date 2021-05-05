@@ -46,13 +46,34 @@
 
         border-radius: 25px;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
         width: auto;
-        /* height: 100px; */
+        height: auto;
         margin: 10px;
         padding: 15px;
 
+
+    }
+
+    .result:hover {
+        background-color: #96c9dd;
+    }
+
+    .result-left {
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+
+        /* border-radius: 25px; */
+        padding: 15px;
+        /* background-color: yellow; */
+    }
+
+    .result-right {
+        flex: 1;
+        /* background-color: green; */
     }
 
     .result p {
@@ -67,7 +88,7 @@
 
     .bottom {
         position: absolute;
-        bottom: 0;
+        bottom: 20;
         width: 500px;
 
 
@@ -78,13 +99,34 @@
     }
 
     .btn {
-        background-color: #c0d6df;
+        /* background-color: #c0d6df; */
+        background-color: #96c9dd;
+
         color: #4a6fa5;
         color: white;
     }
 
+    #toggles {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        height: 100px;
+        padding-left: 60px;
+        /* background-color: yellow; */
+    }
+
     .underline {
         text-decoration: underline;
+    }
+
+    select {
+        height: 20px;
+        margin-top: 10px;
+    }
+
+    #transmission-label {
+        margin-top: 10px;
+
     }
 
     #explain {
@@ -102,7 +144,7 @@
         height: 34px; */
         width: 60px;
         height: 34px;
-        margin-left: 150px;
+        /* margin-left: 150px; */
     }
 
     /* Hide default HTML checkbox */
@@ -120,7 +162,9 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #c0d6df;
+        /* background-color: #c0d6df; */
+        background-color: #96c9dd;
+
 
         -webkit-transition: .4s;
         transition: .4s;
@@ -166,6 +210,7 @@
         flex-direction: row;
         align-items: center;
         margin: 5px;
+        /* background-color: purple; */
 
     }
 
@@ -215,77 +260,55 @@
                             Only
                         </p>
                     </div> -->
+                    <div id='toggles'>
+                        <div class='a-label'>
 
-                    <div class='a-label'>
+                            <label class='switch' for='2dr-only'>
 
-                        <label class='switch' for='2dr-only'>
+                                <input type='checkbox' id='2dr-only' name="2dr" />
+                                <span class='slider round'></span>
+                            </label>
+                            <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 2 Door
+                                Cars
+                            </p>
+                        </div>
+                        <div class='a-label'>
 
-                            <input type='checkbox' id='2dr-only' name="2dr" />
-                            <span class='slider round'></span>
-                        </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 2 Door Cars
-                        </p>
+                            <label class='switch' for='4dr-only'>
+                                <input type='checkbox' id='4dr-only' name="4dr" />
+                                <span class='slider round'></span>
+                            </label>
+                            <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 4 Door
+                                Cars
+                            </p>
+
+                        </div>
+                        <div class='a-label'>
+                            <label class='switch' for='conv-only'>
+                                <input type='checkbox' id='conv-only' name="conv" />
+                                <span class='slider round'></span>
+                            </label>
+                            <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'>
+                                Convertibles
+                            </p>
+                        </div>
+                        <div class='a-label'>
+                            <label class='switch' for='elec-only'>
+                                <input type='checkbox' id='elec-only' name="elec" />
+                                <span class='slider round'></span>
+                            </label>
+                            <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'>
+                                Electric/Hybrid
+                            </p>
+                        </div>
                     </div>
-                    <div class='a-label'>
-
-                        <label class='switch' for='4dr-only'>
-                            <input type='checkbox' id='4dr-only' name="4dr" />
-                            <span class='slider round'></span>
-                        </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> 4 Door Cars
-                        </p>
-
-                    </div>
-                    <div class='a-label'>
-                        <label class='switch' for='conv-only'>
-                            <input type='checkbox' id='conv-only' name="conv" />
-                            <span class='slider round'></span>
-                        </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'> Convertibles
-                        </p>
-                    </div>
-                    <div class='a-label'>
-                        <label class='switch' for='elec-only'>
-                            <input type='checkbox' id='elec-only' name="elec" />
-                            <span class='slider round'></span>
-                        </label>
-                        <p class='toggle-label' style='padding-top:3px;padding-left:5px;font-size: 20px;'>
-                            Electric/Hybrid
-                        </p>
-                    </div>
-                    <!-- <div style='width:200px;margin:10px;'>
-                        <label for='min-year' id='min-year-label' style='display: inline;'>Min. Year</label>
-                        <input style='display: inline-block;width:100px;' id="min-year" type="text" name="min-year"
-                            placeholder="Min Year">
-
-                        <label for='max-year' id='max-year-label' style='display: inline;'>Max. Year</label>
-                        <input style='display: inline-block;width:100px;' id="max-year" type="text" name="max-year"
-                            placeholder="Max. Year">
-                    </div> -->
-
-                    <!-- <div style='width:300px;margin:5px;'>
-                        <label style='display:block;' for='min-rating' id='min-rating-label'>Min. Rating</label>
-                        <p style='display: inline-block;'>0</p>
-                        <input style='width:200px;display:inline;margin:10px;' type='range' id='min-rating' min=0 max=5>
-                        <p style='display: inline-block;'>5</p>
-
-                    </div> -->
-
                     <div>
                         <label for='transmission' id='transmission-label'>Transmission:</label>
                         <select id='transmission' name='transmission'>
                             <option value='both' selected>Automatic/Manual</option>
                             <option value="automatic"> Automatic </option>
                             <option value="manual"> Manual </option>
-                            <!-- <p>Transmission:</p>
-                        <label for='automatic' id='auto-label'> Automatic</label>
-                        <input type="radio" id='automatic' name='transmission' value='automatic'>
-                        <label for='manual' id='manual-label'> Manual</label>
 
-                        <input type="radio" id='manual' name='transmission' value='manual'>
-                        <label for='both' id='both-label'> Both</label>
-
-                        <input type="radio" id='both' name='transmission' value='both'> -->
                         </select>
                     </div>
 
@@ -293,8 +316,10 @@
 
 
             <div class="bottom">
-                <p><a href="http://usedcarrecommendation.herokuapp.com" style='color:#FFFFFF'>Version 1</a></p><br>
-                <p><a href="https://usedcarenginev2.herokuapp.com" style='color:#FFFFFF'>Version 2</a></p><br>
+                <p><a href="http://usedcarrecommendation.herokuapp.com" target="_blank" style='color:#FFFFFF'>Version
+                        1</a></p><br>
+                <p><a href="https://usedcarenginev2.herokuapp.com" style='color:#FFFFFF' target="_blank">Version 2</a>
+                </p><br>
                 <p>Project Name: {{ name }}</p>
                 <p>Student Name: ({{ netid }})</p>
 
@@ -315,33 +340,46 @@
                         {% for d in data %}
 
                         <div class='result'>
+
                             {% if '4dr' in d[0] %}
-                            {% with x = d[0].index('4dr') %}
-                            <p><a href='{{d[4]}}' style='color:#FFFFFF'>{{d[0][:x]}}</a></p>
-                            {% if '(' in d[0] %}
-                            <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
-                            {% else %}
-                            <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
-                            {% endif %}
-                            <p class='result-rating'>Average Rating: {{d[1]}}</p>
-                            <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
-                            <img src='{{d[3]}}'>
+                            <div class='result-right'>
+                                <img src='{{d[3]}}'>
+                            </div>
+                            <div class='result-left'>
+                                {% with x = d[0].index('4dr') %}
+                                <p><a href='{{d[4]}}' style='color:#FFFFFF;text-decoration: underline;'
+                                        target="_blank">{{d[0][:x]}}</a>
+                                </p>
+                                {% if '(' in d[0] %}
+                                <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
+                                {% else %}
+                                <p class='result-type'>4 Door {{d[0][x+3:]}}</p>
+                                {% endif %}
+                                <p class='result-rating'>Average Rating: {{d[1]}}</p>
+                                <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
+                            </div>
 
 
                             {% endwith %}
                             {% else %}
 
                             <!-- 2 DOORS -->
-                            {% with x = d[0].index('2dr') %}
-                            <p><a href='{{d[4]}}' style='color:#FFFFFF'>{{d[0][:x]}}</a></p>
-                            {% if '(' in d[0] %}
-                            <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
-                            {% else %}
-                            <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
-                            {% endif %}
-                            <p class='result-rating'>Average Rating: {{d[1]}}</p>
-                            <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
-                            <img src={{d[3]}}>
+                            <div class='result-right'>
+                                <img src={{d[3]}}>
+                            </div>
+                            <div class='result-left'>
+                                {% with x = d[0].index('2dr') %}
+                                <p><a href='{{d[4]}}' style='color:#FFFFFF;text-decoration: underline;'
+                                        target="_blank">{{d[0][:x]}}</a>
+                                </p>
+                                {% if '(' in d[0] %}
+                                <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
+                                {% else %}
+                                <p class='result-type'>2 Door {{d[0][x+3:]}}</p>
+                                {% endif %}
+                                <p class='result-rating'>Average Rating: {{d[1]}}</p>
+                                <p class='result-similarity'>Similarity Score: {{d[2]}}</p>
+                            </div>
 
                             {% endwith %}
 
